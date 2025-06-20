@@ -1,4 +1,4 @@
-# Goldberg Steam Emulator
+# Goldberg Steam Emulator - UPDATED
 
 This is a steam emulator that emulates steam online features on a LAN. It works on both Linux and Windows. For a readme on how to use it see: [The Release Readme](Readme_release.txt)
 

@@ -1,0 +1,72 @@
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            mingw-w64-x86_64-python
+            dos2unix
+            p7zip
+            wget
+            sed
+
+      - name: Install Wine (on Windows via Chocolatey)
+        run: choco install wine
+
+      - name: Convert line endings
+        shell: msys2 {0}
+        run: |
+          unix2dos *.txt
+          unix2dos files_example/*.txt files_example/*/*.txt
+
+      - name: Fix protobuf directories in batch file
+        shell: msys2 {0}
+        run: sed -i 's/..\\vcpkg\\installed\\/.\\protobuf_/g' build_set_protobuf_directories.bat
+
+      - name: Download dependencies
+        shell: msys2 {0}
+        run: |
+          wget 'https://gitlab.com/Mr_Goldberg/goldberg_emulator/uploads/48db8f434a193aae872279dc4f5dde6a/sdk_standalone.7z'
+          wget 'https://gitlab.com/Mr_Goldberg/goldberg_emulator/uploads/0119304e030098b4821d73170fe52084/protobuf_x64-windows-static.7z'
+          wget 'https://gitlab.com/Mr_Goldberg/goldberg_emulator/uploads/4185a97ab363ddc1859127e59ec68581/protobuf_x86-windows-static.7z'
+
+      - name: Extract archives
+        shell: msys2 {0}
+        run: |
+          7za x protobuf_x86-windows-static.7z -oprotobuf_x86-windows-static
+          7za x protobuf_x64-windows-static.7z -oprotobuf_x64-windows-static
+          7za x sdk_standalone.7z -osdk_standalone
+
+      - name: Update DLL files in batch scripts
+        shell: msys2 {0}
+        run: |
+          DLL_FILES="$(ls dll/*.cpp | tr "\n" " ")"; sed "s|dll/\*.cpp|$DLL_FILES|g" -i *.bat
+          DLL_FILES="$(ls dll/*.proto | tr "\n" " " | sed "s/.proto/.pb.cc/g")"; sed "s|dll/\*.cc|$DLL_FILES|g" -i *.bat
+
+      - name: Update /MP flag in batch scripts
+        shell: msys2 {0}
+        run: sed "s| /MP12 | /MP4 |g" -i *.bat
+
+      - name: Generate build batch file
+        shell: msys2 {0}
+        run: python generate_build_win_bat.py
+
+      - name: Build with Wine
+        shell: cmd
+        env:
+          WINEDEBUG: -all
+        run: wine cmd /c build_win_release_test.bat
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: release
+          path: release/

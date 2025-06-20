@@ -74,7 +74,7 @@ jobs:
         run: wine cmd /c build_win_release_test.bat
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release
           path: release/

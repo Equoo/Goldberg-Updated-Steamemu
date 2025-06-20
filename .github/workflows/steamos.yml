@@ -1,0 +1,94 @@
+name: Build Goldberg Emulator for SteamOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main  # or your working branch
+
+jobs:
+  protobuf_static_steamos:
+    runs-on: ubuntu-latest
+    container:
+      image: tianon/steamos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Restore protobuf cache
+        uses: actions/cache@v4
+        with:
+          path: protobuf/
+          key: protobuf-static-steamos-cache
+
+      - name: Build protobuf static
+        run: |
+          if [ -e ./protobuf/prefix ]; then
+            echo "Protobuf already built, skipping..."
+            exit 0
+          fi
+
+          apt update && apt -y install gcc-4.9 g++-4.9 git autotools-dev automake libtool g++-4.9-multilib gcc-4.9-multilib build-essential
+
+          export BASE_PREFIX_PATH=$(pwd)
+          echo "Base prefix path: $BASE_PREFIX_PATH"
+
+          mkdir deps
+          cd deps
+
+          git clone --branch 21.x https://github.com/protocolbuffers/protobuf.git
+          cd protobuf
+
+          sh autogen.sh
+          ./configure "CC=gcc-4.9 -m32" "CXX=g++-4.9 -m32" CPPFLAGS="-fPIC -Ofast" CXXFLAGS="-fPIC -Ofast" --prefix=$BASE_PREFIX_PATH/protobuf/prefix_x86/ --disable-shared --enable-static
+          make -j$(nproc) install
+          make clean
+
+          ./configure "CC=gcc-4.9" "CXX=g++-4.9" CPPFLAGS="-fPIC -Ofast" CXXFLAGS="-fPIC -Ofast" --prefix=$BASE_PREFIX_PATH/protobuf/prefix/ --disable-shared --enable-static
+          make -j$(nproc) install
+
+      - name: Upload protobuf artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: protobuf
+          path: protobuf/
+
+  build_steamos:
+    needs: protobuf_static_steamos
+    runs-on: ubuntu-latest
+    container:
+      image: tianon/steamos
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download protobuf artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: protobuf
+          path: protobuf
+
+      - name: Install build dependencies
+        run: |
+          apt update && apt -y install gcc-4.9 g++-4.9 git libtool g++-4.9-multilib gcc-4.9-multilib
+
+      - name: Show system info
+        run: |
+          ls -lah
+          uname -a
+
+      - name: Patch build script
+        run: |
+          sed -i 's/^g++ /g++-4.9 /g' build_steamos.sh
+          sed -i 's|../protobuf/prefix|./protobuf/prefix|g' build_steamos.sh
+
+      - name: Run build script
+        run: sh build_steamos.sh
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: linux/

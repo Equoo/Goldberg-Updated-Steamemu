@@ -1,4 +1,12 @@
 
+name: Build Goldberg Emulator for Windows
+
+on:
+  workflow_call:
+    # needed since it allows this to become a reusable workflow
+  workflow_dispatch:
+    # allows manual trigger
+
 jobs:
   build_windows:
     runs-on: windows-latest

@@ -33,8 +33,8 @@ jobs:
         run: |
           Get-ChildItem -Recurse -Include *.txt | ForEach-Object { (Get-Content $_.FullName) | Set-Content $_.FullName }
 
-      - name: Generate build batch file
-        run: python generate_build_win_bat.py
+      #- name: Generate build batch file
+      #  run: python generate_build_win_bat.py
       
       - name: Fix protobuf directories in batch file
         run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\.', 'protobuf_' | Set-Content build_set_protobuf_directories.bat

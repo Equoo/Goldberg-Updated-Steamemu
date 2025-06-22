@@ -18,6 +18,7 @@
 #include "base.h"
 
 class Steam_RemotePlay :
+public ISteamRemotePlay001,
 public ISteamRemotePlay
 {
     class Settings *settings;

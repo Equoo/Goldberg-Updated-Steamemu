@@ -41,6 +41,7 @@ public ISteamUGC013,
 public ISteamUGC014,
 public ISteamUGC015,
 public ISteamUGC016,
+public ISteamUGC017,
 public ISteamUGC
 {
     class Settings *settings;
@@ -507,7 +508,7 @@ bool SetItemVisibility( UGCUpdateHandle_t handle, ERemoteStoragePublishedFileVis
  // change the visibility of an UGC item
 
 
-bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags )
+bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
 {
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;
@@ -899,6 +900,16 @@ SteamAPICall_t GetWorkshopEULAStatus()
 {
     PRINT_DEBUG("%s\n", __FUNCTION__);
     return 0;
+}
+
+uint32 GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
+{
+    PRINT_DEBUG("Steam_UGC::GetUserContentDescriptorPreferences\n");
+    std::lock_guard<std::recursive_mutex> lock(global_mutex);
+    if (cMaxEntries > 0) {
+        pvecDescriptors[0] = k_EUGCContentDescriptorIDNone;
+    }
+    return 1; // always returns at least one descriptor
 }
 
 

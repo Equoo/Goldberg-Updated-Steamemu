@@ -3513,6 +3513,16 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v017()
     return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION017");
 }
 
+STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v018()
+{
+    return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION018");
+}
+
+STEAMAPI_API ISteamUGC *SteamAPI_SteamUGC_v018()
+{
+    return get_steam_client()->GetISteamUGC(flat_hsteamuser(), flat_hsteampipe(), "STEAMUGC_INTERFACE_VERSION018");
+}
+
 STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v014()
 {
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION014");
@@ -3529,6 +3539,11 @@ STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v016()
 }
 
 STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v017()
+{
+    return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION017");
+}
+
+STEAMAPI_API ISteamUGC *SteamAPI_SteamGameServerUGC_v018()
 {
     return get_steam_client()->GetISteamUGC(flat_gs_hsteamuser(), flat_gs_hsteampipe(), "STEAMUGC_INTERFACE_VERSION017");
 }
@@ -4145,7 +4160,7 @@ STEAMAPI_API steam_bool SteamAPI_ISteamUGC_SetItemVisibility( ISteamUGC* self, U
     return (ptr)->SetItemVisibility(handle, eVisibility);
 }
 
-STEAMAPI_API steam_bool SteamAPI_ISteamUGC_SetItemTags( ISteamUGC* self, UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t * pTags )
+STEAMAPI_API steam_bool SteamAPI_ISteamUGC_SetItemTags( ISteamUGC* self, UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t * pTags, bool bAllowAdminTags )
 {
     long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
     long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
@@ -4154,7 +4169,7 @@ STEAMAPI_API steam_bool SteamAPI_ISteamUGC_SetItemTags( ISteamUGC* self, UGCUpda
         ptr = get_steam_client()->steam_ugc;
     }
 
-    return (ptr)->SetItemTags(updateHandle, pTags);
+    return (ptr)->SetItemTags(updateHandle, pTags, bAllowAdminTags);
 }
 
 STEAMAPI_API steam_bool SteamAPI_ISteamUGC_SetItemContent( ISteamUGC* self, UGCUpdateHandle_t handle, const char * pszContentFolder )
@@ -4635,6 +4650,18 @@ STEAMAPI_API SteamAPICall_t SteamAPI_ISteamUGC_GetWorkshopEULAStatus( ISteamUGC*
     }
 
     return (ptr)->GetWorkshopEULAStatus();
+}
+
+STEAMAPI_API uint32 SteamAPI_ISteamUGC_GetUserContentDescriptorPreferences( ISteamUGC* self, EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
+{
+    long long test1 = ((char *)self - (char*)get_steam_client()->steam_ugc);
+    long long test2 = ((char *)self - (char*)get_steam_client()->steam_gameserver_ugc);
+    auto ptr = get_steam_client()->steam_gameserver_ugc;
+    if (test1 >= 0 && (test2 < 0 || test1 < test2)) {
+        ptr = get_steam_client()->steam_ugc;
+    }
+
+    return (ptr)->GetUserContentDescriptorPreferences(pvecDescriptors, cMaxEntries);
 }
 
 
@@ -5482,6 +5509,11 @@ STEAMAPI_API ISteamRemotePlay *SteamAPI_SteamRemotePlay_v001()
     return get_steam_client()->GetISteamRemotePlay(flat_hsteamuser(), flat_hsteampipe(), "STEAMREMOTEPLAY_INTERFACE_VERSION001");
 }
 
+STEAMAPI_API ISteamRemotePlay *SteamAPI_SteamRemotePlay_v002()
+{
+    return get_steam_client()->GetISteamRemotePlay(flat_hsteamuser(), flat_hsteampipe(), "STEAMREMOTEPLAY_INTERFACE_VERSION002");
+}
+
 STEAMAPI_API uint32 SteamAPI_ISteamRemotePlay_GetSessionCount( ISteamRemotePlay* self )
 {
     return self->GetSessionCount();
@@ -5510,6 +5542,11 @@ STEAMAPI_API ESteamDeviceFormFactor SteamAPI_ISteamRemotePlay_GetSessionClientFo
 STEAMAPI_API steam_bool SteamAPI_ISteamRemotePlay_BGetSessionClientResolution( ISteamRemotePlay* self, RemotePlaySessionID_t unSessionID, int * pnResolutionX, int * pnResolutionY )
 {
     return self->BGetSessionClientResolution(unSessionID, pnResolutionX, pnResolutionY);
+}
+
+STEAMAPI_API steam_bool SteamAPI_ISteamRemotePlay_BStartRemotePlayTogether( ISteamRemotePlay* self, bool bShowOverlay )
+{
+    return self->BStartRemotePlayTogether(bShowOverlay);
 }
 
 STEAMAPI_API steam_bool SteamAPI_ISteamRemotePlay_BSendRemotePlayTogetherInvite( ISteamRemotePlay* self, uint64_steamid steamIDFriend )

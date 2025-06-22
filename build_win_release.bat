@@ -1,4 +1,3 @@
-@echo off
 cd /d "%~dp0"
 del /Q /S release\*
 rmdir /S /Q release\experimental

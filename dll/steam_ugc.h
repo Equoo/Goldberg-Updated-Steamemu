@@ -902,14 +902,13 @@ SteamAPICall_t GetWorkshopEULAStatus()
     return 0;
 }
 
-uint32 GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
+// Return the user's community content descriptor preferences
+uint32 Steam_UGC::GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
 {
-    PRINT_DEBUG("Steam_UGC::GetUserContentDescriptorPreferences\n");
+    PRINT_DEBUG_TODO();
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
-    if (cMaxEntries > 0) {
-        pvecDescriptors[0] = k_EUGCContentDescriptorIDNone;
-    }
-    return 1; // always returns at least one descriptor
+    
+    return 0;
 }
 
 

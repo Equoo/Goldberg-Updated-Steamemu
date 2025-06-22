@@ -33,11 +33,11 @@ jobs:
         run: |
           Get-ChildItem -Recurse -Include *.txt | ForEach-Object { (Get-Content $_.FullName) | Set-Content $_.FullName }
 
-      - name: Fix protobuf directories in batch file
-        run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\.', 'protobuf_' | Set-Content build_set_protobuf_directories.bat
-
       - name: Generate build batch file
         run: python generate_build_win_bat.py
+      
+      - name: Fix protobuf directories in batch file
+        run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\.', 'protobuf_' | Set-Content build_set_protobuf_directories.bat
 
       - name: Update DLL files in batch scripts
         run: |
@@ -46,7 +46,6 @@ jobs:
 
           $protoFiles = Get-ChildItem dll -Filter *.proto | ForEach-Object { $_.FullName -replace '.*dll\\', 'dll\\' } | ForEach-Object { $_ -replace '\.proto$', '.pb.cc' } | Join-String " "
           (Get-Content build_win_release_test.bat) -replace 'dll/\*.cc', $protoFiles | Set-Content build_win_release_test.bat
-
 
       - name: Build project
         run: cmd /c build_win_release_test.bat

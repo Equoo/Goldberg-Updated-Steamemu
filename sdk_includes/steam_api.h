@@ -205,9 +205,27 @@ enum ESteamAPIInitResult
 	k_ESteamAPIInitResult_VersionMismatch = 3, // Steam client appears to be out of date
 };
 
-// Initialize the Steamworks SDK.
-// On success k_ESteamAPIInitResult_OK is returned.  Otherwise, if pOutErrMsg is non-NULL,
-// it will receive a non-localized message that explains the reason for the failure
+// Initializing the Steamworks SDK
+// -----------------------------
+// 
+// There are three different methods you can use to initialize the Steamworks SDK, depending on
+// your project's environment. You should only use one method in your project.
+// 
+// If you are able to include this C++ header in your project, we recommend using the following
+// initialization methods. They will ensure that all ISteam* interfaces defined in other
+// C++ header files have versions that are supported by the user's Steam Client:
+// - SteamAPI_InitEx() for new projects so you can show a detailed error message to the user
+// - SteamAPI_Init() for existing projects that only display a generic error message
+// 
+// If you are unable to include this C++ header in your project and are dynamically loading
+// Steamworks SDK methods from dll/so, you can use the following method:
+// - SteamAPI_InitFlat()
+
+
+// See "Initializing the Steamworks SDK" above for how to choose an init method.
+// On success k_ESteamAPIInitResult_OK is returned. Otherwise, returns a value that can be used
+// to create a localized error message for the user. If pOutErrMsg is non-NULL,
+// it will receive an example error message, in English, that explains the reason for the failure.
 //
 // Example usage:
 // 
@@ -215,6 +233,10 @@ enum ESteamAPIInitResult
 //   if ( SteamAPI_Init(&errMsg) != k_ESteamAPIInitResult_OK )
 //       FatalError( "Failed to init Steam.  %s", errMsg );
 inline ESteamAPIInitResult SteamAPI_InitEx( SteamErrMsg *pOutErrMsg );
+
+// See "Initializing the Steamworks SDK" above for how to choose an init method.
+// Same usage as SteamAPI_InitEx(), however does not verify ISteam* interfaces are
+// supported by the user's client and is exported from the dll
 
 S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg );
 

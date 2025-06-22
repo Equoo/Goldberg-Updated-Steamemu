@@ -77,6 +77,8 @@ jobs:
             uname -a
             ls -lah
 
+            chmod -R 755 ./protobuf
+
             sed -i 's/^g++ /g++-4.9 /g' build_steamos.sh
             sed -i 's|../protobuf/prefix|./protobuf/prefix|g' build_steamos.sh
 

@@ -689,7 +689,7 @@ STEAMAPI_API ESteamAPIInitResult S_CALLTYPE SteamInternal_GameServer_Init_V2( ui
 //STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
 STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
 {
-    PRINT_DEBUG_ENTRY();
+    PRINT_DEBUG("SteamGameServer_Init %u %hu %hu %hu %u %p %p %p\n", unIP, usSteamPort, usGamePort, unknown, eServerMode, unknown1, unknown2, unknown3);
     const char *pchVersionString{};
     EServerMode serverMode{};
     uint16 usQueryPort{};

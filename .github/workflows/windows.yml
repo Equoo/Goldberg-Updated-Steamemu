@@ -37,7 +37,7 @@ jobs:
       #  run: python generate_build_win_bat.py
       
       - name: Fix protobuf directories in batch file
-        run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\.', 'protobuf_' | Set-Content build_set_protobuf_directories.bat
+        run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\', 'protobuf_' | Set-Content build_set_protobuf_directories.bat
 
       - name: Update DLL files in batch scripts
         run: |

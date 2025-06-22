@@ -25,7 +25,7 @@
 
 enum EServerMode
 {
-	eServerModeInvalid = 0, // DO NOT USE		
+	eServerModeInvalid = 0, // DO NOT USE
 	eServerModeNoAuthentication = 1, // Don't authenticate user logins and don't list on the server list
 	eServerModeAuthentication = 2, // Authenticate users, list on the server list, don't run VAC on clients that connect
 	eServerModeAuthenticationAndSecure = 3, // Authenticate users, list on the server list and VAC protect clients
@@ -45,6 +45,12 @@ const uint16 STEAMGAMESERVER_QUERY_PORT_SHARED = 0xffff;
 // After calling this function, you should set any additional server parameters, and then
 // call ISteamGameServer::LogOnAnonymous() or ISteamGameServer::LogOn()
 //
+// - usSteamPort is the local port used to communicate with the steam servers.
+//   NOTE: unless you are using ver old Steam client binaries, this parameter is ignored, and
+//         you should pass 0.  Gameservers now always use WebSockets to talk to Steam.
+//         This protocol is TCP-based and thus always uses an ephemeral local port.
+//         Older steam client binaries used UDP to talk to Steam, and this argument was useful.
+//         A future version of the SDK will remove this argument.
 // - unIP will usually be zero.  If you are on a machine with multiple IP addresses, you can pass a non-zero
 //   value here and the relevant sockets will be bound to that IP.  This can be used to ensure that
 //   the IP you desire is the one used in the server browser.
@@ -57,15 +63,13 @@ const uint16 STEAMGAMESERVER_QUERY_PORT_SHARED = 0xffff;
 //		ISteamGameServer::GetNextOutgoingPacket.)
 // - The version string should be in the form x.x.x.x, and is used by the master server to detect when the
 //		server is out of date.  (Only servers with the latest version will be listed.)
-//
-// On success k_ESteamAPIInitResult_OK is returned.  Otherwise, if pOutErrMsg is non-NULL,
-// it will receive a non-localized message that explains the reason for the failure
 #ifndef STEAM_API_EXPORTS
-S_API ESteamAPIInitResult SteamGameServer_InitEx( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, SteamErrMsg *pOutErrMsg )
 S_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+S_API ESteamAPIInitResult SteamGameServer_InitEx( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, SteamErrMsg *pOutErrMsg );
 #endif
-S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_GameServer_Init_V2( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg );
 
+S_API steam_bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+S_API ESteamAPIInitResult S_CALLTYPE SteamInternal_GameServer_Init_V2( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg );
 
 
 // Shutdown SteamGameSeverXxx interfaces, log out, and free resources.
@@ -120,6 +124,14 @@ inline bool CSteamGameServerAPIContext::Init()
 }
 
 
+inline steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
+{
+	if ( !SteamInternal_GameServer_Init( unIP, usSteamPort, usGamePort, usQueryPort, eServerMode, pchVersionString ) )
+		return false;
+
+	return true;
+}
+
 inline ESteamAPIInitResult SteamGameServer_InitEx( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, SteamErrMsg *pOutErrMsg )
 {
 	const char *pszInternalCheckInterfaceVersions = 
@@ -136,13 +148,6 @@ inline ESteamAPIInitResult SteamGameServer_InitEx( uint32 unIP, uint16 usGamePor
 		STEAMUGC_INTERFACE_VERSION "\0"
 		"\0";
 	return SteamInternal_GameServer_Init_V2( unIP, usGamePort, usQueryPort, eServerMode, pchVersionString, pszInternalCheckInterfaceVersions, pOutErrMsg );
-}
-
-// This function is included for compatibility with older SDK.
-// You can use it if you don't care about decent error handling
-inline bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
-{
-	return SteamGameServer_InitEx( unIP, usGamePort, usQueryPort, eServerMode, pchVersionString, NULL ) == k_ESteamAPIInitResult_OK;
 }
 inline void SteamGameServer_ReleaseCurrentThreadMemory()
 {

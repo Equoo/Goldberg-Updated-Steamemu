@@ -235,6 +235,30 @@ STEAMAPI_API void * S_CALLTYPE SteamInternal_ContextInit( void *pContextInitData
 }
 
 //steam_api.h
+
+// Initialize the Steamworks SDK.
+// On success k_ESteamAPIInitResult_OK is returned.  Otherwise, if pOutErrMsg is non-NULL,
+// it will receive a non-localized message that explains the reason for the failure
+//
+// Example usage:
+// 
+//   SteamErrMsg errMsg;
+//   if ( SteamAPI_Init(&errMsg) != k_ESteamAPIInitResult_OK )
+//       FatalError( "Failed to init Steam.  %s", errMsg );
+STEAMAPI_API ESteamAPIInitResult S_CALLTYPE SteamInternal_SteamAPI_Init( const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg )
+{
+    PRINT_DEBUG("%s", pszInternalCheckInterfaceVersions);
+    if (SteamAPI_Init()) {
+        return ESteamAPIInitResult::k_ESteamAPIInitResult_OK;
+    }
+
+    if (pOutErrMsg) {
+        constexpr const static char err[] = "SteamInitEx failed";
+        memcpy(*pOutErrMsg, err, sizeof(err));
+    }
+    return ESteamAPIInitResult::k_ESteamAPIInitResult_FailedGeneric;
+}
+
 // SteamAPI_Init must be called before using any other API functions. If it fails, an
 // error message will be output to the debugger (or stderr) with further information.
 static HSteamPipe user_steam_pipe;
@@ -252,6 +276,7 @@ STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_Init()
     global_counter++;
     return true;
 }
+
 
 //TODO: not sure if this is the right signature for this function.
 STEAMAPI_API steam_bool S_CALLTYPE SteamAPI_InitAnonymousUser()
@@ -625,10 +650,11 @@ STEAMAPI_API ISteamClient *SteamGameServerClient();
 
 STEAMAPI_API steam_bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString )
 {
-    PRINT_DEBUG("SteamInternal_GameServer_Init %u %hu %hu %hu %u %s\n", unIP, usPort, usGamePort, usQueryPort, eServerMode, pchVersionString);
+    PRINT_DEBUG("%X %hu %hu %hu %u %s", unIP, usPort, usGamePort, usQueryPort, eServerMode, pchVersionString);
+    // call this first since it loads old interfaces
+    Steam_Client* client = get_steam_client();
     if (!server_steam_pipe) {
-        load_old_interface_versions();
-        get_steam_client()->CreateLocalUser(&server_steam_pipe, k_EAccountTypeGameServer);
+        client->CreateLocalUser(&server_steam_pipe, k_EAccountTypeGameServer);
         ++global_counter;
         //g_pSteamClientGameServer is only used in pre 1.37 (where the interface versions are not provided by the game)
         g_pSteamClientGameServer = SteamGameServerClient();
@@ -636,23 +662,21 @@ STEAMAPI_API steam_bool S_CALLTYPE SteamInternal_GameServer_Init( uint32 unIP, u
 
     uint32 unFlags = 0;
     if (eServerMode == eServerModeAuthenticationAndSecure) unFlags = k_unServerFlagSecure;
-    return get_steam_client()->steam_gameserver->InitGameServer(unIP, usGamePort, usQueryPort, unFlags, 0, pchVersionString);
+    return client->steam_gameserver->InitGameServer(unIP, usGamePort, usQueryPort, unFlags, 0, pchVersionString);
 }
 
 STEAMAPI_API ESteamAPIInitResult S_CALLTYPE SteamInternal_GameServer_Init_V2( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString, const char *pszInternalCheckInterfaceVersions, SteamErrMsg *pOutErrMsg )
 {
-    PRINT_DEBUG("SteamInternal_GameServer_Init_V2 %u %hu %hu %u %s\n", unIP, usGamePort, usQueryPort, eServerMode, pchVersionString);
-    if (!server_steam_pipe) {
-        load_old_interface_versions();
-        get_steam_client()->CreateLocalUser(&server_steam_pipe, k_EAccountTypeGameServer);
-        ++global_counter;
-        //g_pSteamClientGameServer is only used in pre 1.37 (where the interface versions are not provided by the game)
-        g_pSteamClientGameServer = SteamGameServerClient();
+    PRINT_DEBUG("%u %hu %hu %u %s %s", unIP, usGamePort, usQueryPort, eServerMode, pchVersionString, pszInternalCheckInterfaceVersions);
+    if (SteamInternal_GameServer_Init(unIP, 0, usGamePort, usQueryPort, eServerMode, pchVersionString)) {
+        return ESteamAPIInitResult::k_ESteamAPIInitResult_OK;
     }
-
-    uint32 unFlags = 0;
-    if (eServerMode == eServerModeAuthenticationAndSecure) unFlags = k_unServerFlagSecure;
-    return get_steam_client()->steam_gameserver->InitGameServer(unIP, usGamePort, usQueryPort, unFlags, 0, pchVersionString);
+    if (pOutErrMsg) {
+        memcpy(*pOutErrMsg, "GameServer_V2 failed", 20);
+        (*pOutErrMsg)[20] = 0;
+        (*pOutErrMsg)[21] = 0;
+    }
+    return ESteamAPIInitResult::k_ESteamAPIInitResult_FailedGeneric;
 }
 
 //SteamGameServer004 and before:
@@ -661,15 +685,19 @@ STEAMAPI_API ESteamAPIInitResult S_CALLTYPE SteamInternal_GameServer_Init_V2( ui
 //STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usPort, uint16 usGamePort, uint16 usSpectatorPort, uint16 usQueryPort, EServerMode eServerMode, const char *pchGameDir, const char *pchVersionString );
 //SteamGameServer011 and later:
 //STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
+//SteamGameServer015 and later:
+//STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usGamePort, uint16 usQueryPort, EServerMode eServerMode, const char *pchVersionString );
 STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, uint16 usGamePort, uint16 unknown, EServerMode eServerMode, void *unknown1, void *unknown2, void *unknown3 )
 {
-    const char *pchVersionString;
-    EServerMode serverMode;
-    uint16 usQueryPort;
-    load_old_interface_versions();
+    PRINT_DEBUG_ENTRY();
+    const char *pchVersionString{};
+    EServerMode serverMode{};
+    uint16 usQueryPort{};
+    // call this first since it loads old interfaces
+    Steam_Client* client = get_steam_client();
     bool logon_anon = false;
     if (strcmp(old_gameserver, "SteamGameServer010") == 0 || strstr(old_gameserver, "SteamGameServer00") == old_gameserver) {
-        PRINT_DEBUG("Old game server init\n");
+        PRINT_DEBUG("Old game server init");
         pchVersionString = (char *)unknown3;
         memcpy(&serverMode, &unknown1, sizeof(serverMode));
         memcpy(&usQueryPort, (char *)&eServerMode, sizeof(usQueryPort));
@@ -682,7 +710,7 @@ STEAMAPI_API steam_bool SteamGameServer_Init( uint32 unIP, uint16 usSteamPort, u
 
     bool ret = SteamInternal_GameServer_Init( unIP, usSteamPort, usGamePort, usQueryPort, serverMode, pchVersionString );
     if (logon_anon) {
-        get_steam_client()->steam_gameserver->LogOnAnonymous();
+        client->steam_gameserver->LogOnAnonymous();
     }
 
     return ret;

@@ -114,6 +114,14 @@ bool BSendRemotePlayTogetherInvite( CSteamID steamIDFriend )
     return false;
 }
 
+// Invite a friend to Remote Play Together
+// This returns false if the invite can't be sent
+bool BStartRemotePlayTogether( bool bShowOverlay = true )
+{
+    PRINT_DEBUG("Steam_RemotePlay::BStartRemotePlayTogether\n");
+    return false;
+}
+
 void RunCallbacks()
 {
 }

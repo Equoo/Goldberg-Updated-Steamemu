@@ -905,7 +905,7 @@ SteamAPICall_t GetWorkshopEULAStatus()
 // Return the user's community content descriptor preferences
 uint32 Steam_UGC::GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
 {
-    PRINT_DEBUG_TODO();
+    PRINT_DEBUG("%s\n", __FUNCTION__);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
     
     return 0;

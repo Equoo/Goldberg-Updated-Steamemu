@@ -512,7 +512,7 @@ bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t 
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;
 }
-bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
+bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags )
 {
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;

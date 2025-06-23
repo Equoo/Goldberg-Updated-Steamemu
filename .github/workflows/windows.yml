@@ -47,8 +47,20 @@ jobs:
           $protoFiles = Get-ChildItem dll -Filter *.proto | ForEach-Object { $_.FullName -replace '.*dll\\', 'dll\\' } | ForEach-Object { $_ -replace '\.proto$', '.pb.cc' } | Join-String " "
           (Get-Content build_win_release.bat) -replace 'dll/\*.cc', $protoFiles | Set-Content build_win_release.bat
 
-      - name: Build project
-        run: cmd /c build_win_release.bat
+      - name: Build steam_api
+        run: cmd /c build_win_release_steam_api.bat
+
+      - name: Build experimental
+        run: cmd /c build_win_release_experimental.bat
+
+      - name: Build experimental steamclient
+        run: cmd /c build_win_release_experimental_steamclient.bat
+
+      - name: Build lobby connect
+        run: cmd /c build_win_lobby_connect.bat
+
+      - name: Build find interfaces
+        run: cmd /c build_win_find_interfaces.bat
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4

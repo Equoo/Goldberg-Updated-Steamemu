@@ -507,8 +507,12 @@ bool SetItemVisibility( UGCUpdateHandle_t handle, ERemoteStoragePublishedFileVis
 }
  // change the visibility of an UGC item
 
-
-bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
+bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags )
+{
+    PRINT_DEBUG("Steam_UGC::SetItemTags\n");
+    return false;
+}
+bool ISteamUGC::SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
 {
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;

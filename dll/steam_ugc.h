@@ -512,7 +512,7 @@ bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t 
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;
 }
-bool ISteamUGC::SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
+bool SetItemTags( UGCUpdateHandle_t updateHandle, const SteamParamStringArray_t *pTags, bool bAllowAdminTags = false )
 {
     PRINT_DEBUG("Steam_UGC::SetItemTags\n");
     return false;
@@ -907,7 +907,7 @@ SteamAPICall_t GetWorkshopEULAStatus()
 }
 
 // Return the user's community content descriptor preferences
-uint32 Steam_UGC::GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
+uint32 GetUserContentDescriptorPreferences( EUGCContentDescriptorID *pvecDescriptors, uint32 cMaxEntries )
 {
     PRINT_DEBUG("%s\n", __FUNCTION__);
     std::lock_guard<std::recursive_mutex> lock(global_mutex);

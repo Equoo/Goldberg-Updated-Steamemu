@@ -48,7 +48,7 @@ jobs:
           (Get-Content build_win_release.bat) -replace 'dll/\*.cc', $protoFiles | Set-Content build_win_release.bat
 
       - name: Build steam_api
-        run: cmd /c build_win_release_steam_api.bat
+        run: cmd /c build_win_release_steamapi.bat
 
       - name: Build experimental
         run: cmd /c build_win_release_experimental.bat

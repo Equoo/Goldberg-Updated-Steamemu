@@ -44,7 +44,7 @@ bool Steam_GameServer::InitGameServer( uint32 unIP, uint16 usGamePort, uint16 us
     PRINT_DEBUG("InitGameServer\n");
     std::lock_guard<std::recursive_mutex> lock(global_mutex);
 
-    if (logged_in) return false; // may not be changed after logged in.
+    //if (logged_in) return false; // may not be changed after logged in.
     if (!pchVersionString) pchVersionString = "";
 
     std::string version(pchVersionString);

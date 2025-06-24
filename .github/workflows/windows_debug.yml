@@ -1,4 +1,4 @@
-name: Build Goldberg Emulator for Windows (Native)
+name: Build Debug Goldberg Emulator for Windows (Native)
 
 on:
   workflow_dispatch:  # Manual trigger
@@ -36,31 +36,11 @@ jobs:
       - name: Fix protobuf directories in batch file
         run: (Get-Content build_set_protobuf_directories.bat) -replace '..\\vcpkg\\installed\\', 'protobuf_' | Set-Content build_set_protobuf_directories.bat
 
-      - name: Update DLL files in batch scripts
-        run: |
-          $dllFiles = Get-ChildItem dll -Filter *.cpp | ForEach-Object { $_.FullName -replace '.*dll\\', 'dll\\' } | Join-String " "
-          (Get-Content build_win_release.bat) -replace 'dll/\*.cpp', $dllFiles | Set-Content build_win_release.bat
-
-          $protoFiles = Get-ChildItem dll -Filter *.proto | ForEach-Object { $_.FullName -replace '.*dll\\', 'dll\\' } | ForEach-Object { $_ -replace '\.proto$', '.pb.cc' } | Join-String " "
-          (Get-Content build_win_release.bat) -replace 'dll/\*.cc', $protoFiles | Set-Content build_win_release.bat
-
-      - name: Build steam_api
-        run: cmd /c build_win_release_steamapi.bat
-
       - name: Build experimental
         run: cmd /c build_win_debug_experimental.bat
-
-      - name: Build experimental steamclient
-        run: cmd /c build_win_debug_experimental_steamclient.bat
-
-      - name: Build lobby connect
-        run: cmd /c build_win_lobby_connect.bat
-
-      - name: Build find interfaces
-        run: cmd /c build_win_find_interfaces.bat
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release
-          path: release/
+          name: debug
+          path: debug/

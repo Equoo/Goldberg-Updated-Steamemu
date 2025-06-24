@@ -71,7 +71,7 @@ jobs:
       - name: Build project inside Docker
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace tianon/steamos bash -c "
-            apt update && apt -y install gcc-4.9 g++-4.9 git libtool g++-4.9-multilib gcc-4.9-multilib libx11 libxext libxi libxrandr libxinerama libgl1-mesa-dev libx11-dev libglu1-mesa-dev libxext-dev libxi-dev &&
+            apt update && apt -y install gcc-4.9 g++-4.9 git libtool g++-4.9-multilib gcc-4.9-multilib libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev &&
 
             echo 'System Info:'
             uname -a

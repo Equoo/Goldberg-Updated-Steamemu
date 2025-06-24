@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <ingame_overlay/Renderer_Hook.h>
+#include "../Renderer_Hook.h"
 
 #include "../internal_includes.h"
 

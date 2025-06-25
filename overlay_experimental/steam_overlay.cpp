@@ -13,6 +13,17 @@
 
 #include "Renderer_Detector.h"
 
+constexpr float Notification::width;
+constexpr float Notification::height;
+constexpr std::chrono::milliseconds Notification::fade_in;
+constexpr std::chrono::milliseconds Notification::fade_out;
+constexpr std::chrono::milliseconds Notification::show_time;
+constexpr std::chrono::milliseconds Notification::fade_out_start;
+constexpr float Notification::r;
+constexpr float Notification::g;
+constexpr float Notification::b;
+constexpr float Notification::max_alpha;
+
 static constexpr int max_window_id = 10000;
 static constexpr int base_notif_window_id  = 0 * max_window_id;
 static constexpr int base_friend_window_id = 1 * max_window_id;

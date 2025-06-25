@@ -71,8 +71,7 @@ jobs:
       - name: Build project inside Docker
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace debian:bullseye bash -c "
-            apt update && apt -y install gcc g++ git libtool build-essential libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev &&
-
+            apt update && apt -y install gcc g++ git libtool build-essential libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev
 
             echo 'System Info:'
             uname -a
@@ -80,7 +79,6 @@ jobs:
 
             chmod -R 755 ./protobuf
 
-            sed -i 's/^g++ /g++-4.9 /g' build_steamos.sh
             sed -i 's|../protobuf/prefix|./protobuf/prefix|g' build_steamos.sh
 
             sh build_steamos.sh

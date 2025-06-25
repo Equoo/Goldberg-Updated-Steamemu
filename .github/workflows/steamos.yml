@@ -27,7 +27,8 @@ jobs:
             exit 0
           fi
 
-          apt update && apt -y install gcc-4.9 g++-4.9 git autotools-dev automake libtool g++-4.9-multilib gcc-4.9-multilib build-essential
+          sudo apt update &&
+          sudo apt -y install gcc-4.9 g++-4.9 git autotools-dev automake libtool g++-4.9-multilib gcc-4.9-multilib build-essential
 
           export BASE_PREFIX_PATH=$(pwd)
           echo 'Base prefix path: '$BASE_PREFIX_PATH

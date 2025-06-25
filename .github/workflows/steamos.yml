@@ -11,27 +11,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Restore protobuf cache
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
         with:
           path: protobuf/
           key: protobuf-static-steamos-cache
 
-      - name: Build protobuf static inside Docker
-        run: |
+      - run: |
+          sudo apt update
+          sudo apt install -y build-essential git autotools-dev automake libtool
+
+      - run: |
           if [ -e ./protobuf/prefix ]; then
             echo "Protobuf already built, skipping..."
             exit 0
           fi
 
-          sudo apt update &&
-          sudo apt -y install gcc-4.9 g++-4.9 git autotools-dev automake libtool g++-4.9-multilib gcc-4.9-multilib build-essential
-
           export BASE_PREFIX_PATH=$(pwd)
-          echo 'Base prefix path: '$BASE_PREFIX_PATH
+          echo "Base prefix path: $BASE_PREFIX_PATH"
 
           mkdir -p deps
           cd deps
@@ -40,15 +38,14 @@ jobs:
           cd protobuf
 
           sh autogen.sh
-          ./configure 'CC=gcc-4.9 -m32' 'CXX=g++-4.9 -m32' CPPFLAGS='-fPIC -Ofast' CXXFLAGS='-fPIC -Ofast' --prefix=$BASE_PREFIX_PATH/protobuf/prefix_x86/ --disable-shared --enable-static
+          ./configure 'CC=gcc' 'CXX=g++' CPPFLAGS='-fPIC -Ofast' CXXFLAGS='-fPIC -Ofast' --prefix=$BASE_PREFIX_PATH/protobuf/prefix_x86/ --disable-shared --enable-static
           make -j$(nproc) install
           make clean
 
-          ./configure 'CC=gcc-4.9' 'CXX=g++-4.9' CPPFLAGS='-fPIC -Ofast' CXXFLAGS='-fPIC -Ofast' --prefix=$BASE_PREFIX_PATH/protobuf/prefix/ --disable-shared --enable-static
+          ./configure 'CC=gcc' 'CXX=g++' CPPFLAGS='-fPIC -Ofast' CXXFLAGS='-fPIC -Ofast' --prefix=$BASE_PREFIX_PATH/protobuf/prefix/ --disable-shared --enable-static
           make -j$(nproc) install
 
-      - name: Upload protobuf artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: protobuf
           path: protobuf/

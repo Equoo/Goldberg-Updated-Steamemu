@@ -15,6 +15,14 @@
    License along with the Goldberg Emulator; if not, see
    <http://www.gnu.org/licenses/>.  */
 
+#if defined(__GLIBC__)
+extern "C" int __xstat(int ver, const char *path, struct stat *buf);
+extern "C" int __lxstat(int ver, const char *path, struct stat *buf);
+extern "C" int __xmknod(int ver, const char *path, mode_t mode, dev_t *dev);
+extern "C" int __xstat64(int ver, const char *path, struct stat64 *buf);
+extern "C" int __lxstat64(int ver, const char *path, struct stat64 *buf);
+#endif
+
 #if defined(WIN64) || defined(_WIN64) || defined(__MINGW64__)
     #define __WINDOWS_64__
 #elif defined(WIN32) || defined(_WIN32) || defined(__MINGW32__)

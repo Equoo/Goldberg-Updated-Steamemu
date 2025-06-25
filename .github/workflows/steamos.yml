@@ -81,12 +81,6 @@ jobs:
           uname -a
           ls -lah
 
-          ls -lah ./protobuf && echo "Protobuf directory exists"
-          ls -lah ./protobuf/prefix && echo "Protobuf prefix directory exists"
-          ls -lah ./protobuf/prefix/bin && echo "Protobuf prefix bin directory exists"
-          ls -lah ./protobuf/prefix_x86 && echo "Protobuf prefix_x86 directory exists"
-          ls -lah ./protobuf/prefix_x86/bin && echo "Protobuf prefix_x86 bin directory exists"
-
           chmod -R 755 ./protobuf
 
           sed -i 's|../protobuf/prefix|./protobuf/prefix|g' build_steamos.sh

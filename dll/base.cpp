@@ -732,6 +732,9 @@ static void load_dlls()
 
 //For some reason when this function is optimized it breaks the shogun 2 prophet (reloaded) crack.
 #pragma optimize( "", off )
+#ifdef __LINUX__
+extern "C" __attribute__((visibility("default")))
+#endif
 bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
 {
     if (crack_dll_handle) {
@@ -748,7 +751,9 @@ bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
     return false;
 }
 #pragma optimize( "", on )
-
+#ifdef __LINUX__
+extern "C" __attribute__((visibility("default")))
+#endif
 bool crack_SteamAPI_Init()
 {
     if (crack_dll_handle) {

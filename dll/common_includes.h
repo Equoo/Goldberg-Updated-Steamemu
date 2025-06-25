@@ -130,7 +130,11 @@ inline void reset_LastError()
     #define PATH_MAX_STRING_SIZE 512
 
     #ifndef EMU_RELEASE_BUILD
-        #define PRINT_DEBUG(...) do { FILE *t = fopen("STEAM_LOG.txt", "a"); if (t) { fprintf(t, ##__VA_ARGS__); fclose(t); } } while (0)
+        #define PRINT_DEBUG(fmt, ...) \
+            do { \
+                FILE *t = fopen("STEAM_LOG.txt", "a"); \
+                if (t) { fprintf(t, fmt __VA_OPT__(,) __VA_ARGS__); fclose(t); } \
+            } while (0)
     #endif
     #define PATH_SEPARATOR "/" 
 

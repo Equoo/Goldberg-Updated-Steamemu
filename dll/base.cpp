@@ -732,9 +732,6 @@ static void load_dlls()
 
 //For some reason when this function is optimized it breaks the shogun 2 prophet (reloaded) crack.
 #pragma optimize( "", off )
-#ifdef __LINUX__
-extern "C" __attribute__((visibility("default")))
-#endif
 bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
 {
     if (crack_dll_handle) {
@@ -751,9 +748,6 @@ bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
     return false;
 }
 #pragma optimize( "", on )
-#ifdef __LINUX__
-extern "C" __attribute__((visibility("default")))
-#endif
 bool crack_SteamAPI_Init()
 {
     if (crack_dll_handle) {
@@ -875,10 +869,32 @@ void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
 {
 
 }
+//For some reason when this function is optimized it breaks the shogun 2 prophet (reloaded) crack.
+#pragma optimize( "", off )
+bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
+{
+    return false;
+}
+#pragma optimize( "", on )
+bool crack_SteamAPI_Init()
+{
+    return false;
+}
 #endif
 #else
 void set_whitelist_ips(uint32_t *from, uint32_t *to, unsigned num_ips)
 {
 
+}
+//For some reason when this function is optimized it breaks the shogun 2 prophet (reloaded) crack.
+#pragma optimize( "", off )
+bool crack_SteamAPI_RestartAppIfNecessary(uint32 unOwnAppID)
+{
+    return false;
+}
+#pragma optimize( "", on )
+bool crack_SteamAPI_Init()
+{
+    return false;
 }
 #endif

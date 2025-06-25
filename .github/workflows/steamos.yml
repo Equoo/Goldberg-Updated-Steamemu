@@ -71,6 +71,8 @@ jobs:
       - name: Build project inside Docker
         run: |
           docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace debian:bullseye bash -c "
+            apt-get update &&
+            apt-get install -y --no-install-recommends ca-certificates &&
             sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list &&
             apt-get update &&
             apt -y --fix-missing install gcc g++ git libtool build-essential libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev

@@ -70,25 +70,16 @@ jobs:
 
       - name: Build project inside Docker
         run: |
-          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace debian:bullseye bash -c "
-            apt-get update &&
-            apt-get install -y --no-install-recommends ca-certificates &&
-            sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list &&
-            apt-get update &&
-            apt -y --fix-missing install gcc g++ git libtool build-essential libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libglu1-mesa-dev
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace tianon/steamos bash -c "
+            apt update && apt -y install gcc-4.9 g++-4.9 git libtool g++-4.9-multilib gcc-4.9-multilib &&
 
             echo 'System Info:'
             uname -a
             ls -lah
 
-            ls -lah ./protobuf && echo "Protobuf directory exists"
-            ls -lah ./protobuf/prefix && echo "Protobuf prefix directory exists"
-            ls -lah ./protobuf/prefix/bin && echo "Protobuf prefix bin directory exists"
-            ls -lah ./protobuf/prefix_x86 && echo "Protobuf prefix_x86 directory exists"
-            ls -lah ./protobuf/prefix_x86/bin && echo "Protobuf prefix_x86 bin directory exists"
-
             chmod -R 755 ./protobuf
 
+            sed -i 's/^g++ /g++-4.9 /g' build_steamos.sh
             sed -i 's|../protobuf/prefix|./protobuf/prefix|g' build_steamos.sh
 
             sh build_steamos.sh

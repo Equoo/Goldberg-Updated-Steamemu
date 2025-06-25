@@ -21,7 +21,7 @@ jobs:
       - run: |
           sudo dpkg --add-architecture i386
           sudo apt update
-          sudo apt install -y build-essential git autotools-dev automake libtool
+          sudo apt install -y build-essential git autotools-dev automake libtool gcc-multilib g++-multilib libc6-dev-i386
 
       - run: |
           if [ -e ./protobuf/prefix ]; then

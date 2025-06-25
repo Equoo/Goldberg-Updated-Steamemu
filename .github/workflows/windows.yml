@@ -1,4 +1,4 @@
-name: Build Goldberg Emulator for Windows (Native)
+name: Goldberg Emulator for Windows
 
 on:
   workflow_dispatch:

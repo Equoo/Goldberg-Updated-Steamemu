@@ -1,4 +1,4 @@
-name: Build Goldberg Emulator (CMake Linux)
+name: Goldberg Emulator (CMake Linux)
 
 on:
   workflow_dispatch:  # manual trigger

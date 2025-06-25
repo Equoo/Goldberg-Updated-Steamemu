@@ -1,4 +1,4 @@
-name: Build Goldberg Emulator for SteamOS (Dockerized)
+name: Goldberg Emulator for SteamOS
 
 on:
   workflow_dispatch:
@@ -74,8 +74,7 @@ jobs:
             libx11-dev libxext-dev libxi-dev libxrandr-dev libxinerama-dev \
             libgl1-mesa-dev libglu1-mesa-dev \
             gcc-multilib g++-multilib libc6-dev-i386 \
-            libgl1-mesa-dev:i386 libx11-dev:i386 libxext-dev:i386 \
-            libprotobuf-lite32t64
+            libgl1-mesa-dev:i386 libx11-dev:i386 libxext-dev:i386
 
           echo 'System Info:'
           uname -a

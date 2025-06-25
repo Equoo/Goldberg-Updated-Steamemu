@@ -100,7 +100,7 @@ cp scripts/steamclient_loader.sh linux/tools/
 
 # Build 64-bit experimental binaries
 g++ -shared -fPIC -fvisibility=hidden -Wl,--exclude-libs,ALL \
-	-DGNUC -DEMU_RELEASE_BUILD -DEMU_EXPERIMENTAL_BUILD -DCONTROLLER_SUPPORT -DEMU_OVERLAY -s \
+	-DGNUC -DEMU_EXPERIMENTAL_BUILD -DCONTROLLER_SUPPORT -DEMU_OVERLAY -s \
 	-o linux/experimental/x86_64/libsteam_api.so \
 	dll/*.cpp dll/*.cc controller/*.c \
 	ImGui/*.cpp ImGui/backends/imgui_impl_x11.cpp ImGui/backends/imgui_impl_vulkan.cpp ImGui/backends/imgui_impl_opengl3.cpp \
@@ -112,7 +112,7 @@ g++ -shared -fPIC -fvisibility=hidden -Wl,--exclude-libs,ALL \
 	-lGL -lX11 -lXext -lprotobuf -lprotobuf-lite -lpthread -ldl -std=c++14 && echo built64
 
 g++ -shared -fPIC -fvisibility=hidden -Wl,--exclude-libs,ALL \
-	-DGNUC -DEMU_RELEASE_BUILD -DEMU_EXPERIMENTAL_BUILD -DSTEAMCLIENT_DLL -DCONTROLLER_SUPPORT -s \
+	-DGNUC -DEMU_EXPERIMENTAL_BUILD -DSTEAMCLIENT_DLL -DCONTROLLER_SUPPORT -s \
 	-o linux/experimental/x86_64/steamclient.so \
 	dll/*.cpp dll/*.cc controller/*.c \
 	-Wno-return-type \

@@ -26,6 +26,7 @@
 #include "System/System.h"
 #include "System/Library.h"
 #include "System/ScopedLock.hpp"
+#include "internal_includes.h"
 #define GLAD_GL_IMPLEMENTATION
 #include <glad/gl.h>
 
@@ -1137,6 +1138,7 @@ private:
 
     void hook_openglx(std::string const& library_path)
     {
+        SPDLOG_INFO("Hooking OpenGLX from {}", library_path);
         if (!openglx_hooked)
         {
             System::Library::Library libGLX;
@@ -1364,6 +1366,7 @@ public:
             SPDLOG_TRACE("Started renderer detection.");
 
             std::pair<std::string, void(Renderer_Detector::*)(std::string const&)> libraries[]{
+                RENDERER_HOOKS
             };
             std::string name;
 
@@ -1379,6 +1382,7 @@ public:
                     std::string lib_path = FindPreferedModulePath(library.first);
                     if (!lib_path.empty())
                     {
+                        SPDLOG_TRACE("Trying to load renderer library: {}", lib_path.c_str());
                         void* lib_handle = System::Library::GetLibraryHandle(lib_path.c_str());
                         if (lib_handle != nullptr)
                         {
@@ -1389,7 +1393,11 @@ public:
                 }
 
                 stop_detection_cv.wait_for(lck, std::chrono::milliseconds{ 100 });
+                SPDLOG_TRACE("Renderer detection loop iteration after {} ms.", 
+                    std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time).count()); // TEMP
             } while (timeout == infinite_timeout || (std::chrono::steady_clock::now() - start_time) <= timeout);
+            SPDLOG_TRACE("Renderer detection loop finished after {} ms.", 
+                std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time).count()); // TEMP
 
             {
                 System::scoped_lock lk(renderer_mutex, stop_detection_mutex);

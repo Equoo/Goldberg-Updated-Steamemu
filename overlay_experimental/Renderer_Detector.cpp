@@ -1364,7 +1364,6 @@ public:
             SPDLOG_TRACE("Started renderer detection.");
 
             std::pair<std::string, void(Renderer_Detector::*)(std::string const&)> libraries[]{
-                RENDERER_HOOKS
             };
             std::string name;
 

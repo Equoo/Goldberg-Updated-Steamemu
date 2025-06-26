@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#define EMU_OVERLAY // NOTE: REMOVE THIS LINE FOR PRODUCTION BUILD
+
 #ifdef EMU_OVERLAY
 #ifdef STEAM_WIN32
 
@@ -51,14 +53,21 @@ void Base_Hook::UnhookAll()
     }
 }
 
-#else
+#elif defined(__linux__)
+
+#include <gum/guminterceptor.h>
+#include <gum/gumprocess.h>
 
 Base_Hook::Base_Hook():
     _library(nullptr)
-{}
+{
+    gum_init_embedded();
+}
 
 Base_Hook::~Base_Hook()
 {
+    UnhookAll();
+    gum_deinit_embedded();
 }
 
 const char* Base_Hook::get_lib_name() const
@@ -76,10 +85,19 @@ void Base_Hook::EndHook()
 
 void Base_Hook::HookFunc(std::pair<void**, void*> hook)
 {
+    gum_interceptor_attach(gum_interceptor_obtain(), *hook.first, hook.second, nullptr);
+    _hooked_funcs.emplace_back(hook);
 }
 
 void Base_Hook::UnhookAll()
 {
+    if (_hooked_funcs.size())
+    {
+        std::for_each(_hooked_funcs.begin(), _hooked_funcs.end(), [](std::pair<void**, void*>& hook) {
+            gum_interceptor_detach(*hook.first, hook.second);
+            });
+        _hooked_funcs.clear();
+    }
 }
 
 #endif

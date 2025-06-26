@@ -1382,21 +1382,23 @@ public:
                     std::string lib_path = FindPreferedModulePath(library.first);
                     if (!lib_path.empty())
                     {
-                        SPDLOG_TRACE("Trying to load renderer library: {}", lib_path.c_str());
+                        SPDLOG_TRACE("Trying to load renderer library: %s", lib_path.c_str());
                         void* lib_handle = System::Library::GetLibraryHandle(lib_path.c_str());
                         if (lib_handle != nullptr)
                         {
                             std::lock_guard<std::mutex> lk(renderer_mutex);
                             (this->*library.second)(System::Library::GetLibraryPath(lib_handle));
+                            detection_done = true;
+                            SPDLOG_TRACE("Renderer library loaded: %s", lib_path.c_str());
                         }
                     }
                 }
 
                 stop_detection_cv.wait_for(lck, std::chrono::milliseconds{ 100 });
-                SPDLOG_TRACE("Renderer detection loop iteration after {} ms.", 
+                SPDLOG_TRACE("Renderer detection loop iteration after %ld ms.", 
                     std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time).count()); // TEMP
             } while (timeout == infinite_timeout || (std::chrono::steady_clock::now() - start_time) <= timeout);
-            SPDLOG_TRACE("Renderer detection loop finished after {} ms.", 
+            SPDLOG_TRACE("Renderer detection loop finished after %ld ms.", 
                 std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time).count()); // TEMP
 
             {

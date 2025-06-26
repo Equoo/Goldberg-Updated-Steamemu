@@ -55,8 +55,7 @@ void Base_Hook::UnhookAll()
 
 #elif defined(__linux__)
 
-#include <gum/guminterceptor.h>
-#include <gum/gumprocess.h>
+#include "frida-gumjs.h"
 
 Base_Hook::Base_Hook():
     _library(nullptr)

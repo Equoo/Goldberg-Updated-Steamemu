@@ -1392,7 +1392,6 @@ public:
                         {
                             std::lock_guard<std::mutex> lk(renderer_mutex);
                             (this->*library.second)(System::Library::GetLibraryPath(lib_handle));
-                            detection_done = true;
                             SPDLOG_TRACE("Renderer library loaded: %s", lib_path.c_str());
                         }
                     }

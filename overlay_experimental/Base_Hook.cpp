@@ -93,7 +93,7 @@ void Base_Hook::UnhookAll()
 {
     if (_hooked_funcs.size())
     {
-        std::for_each(_hooked_funcs.begin(), _hooked_funcs.end(), [](std::pair<void**, void*>& hook) {
+        std::for_each(_hooked_funcs.begin(), _hooked_funcs.end(), [this](std::pair<void**, void*>& hook) {
             gum_interceptor_revert(_interceptor, *hook.first);
             });
         _hooked_funcs.clear();

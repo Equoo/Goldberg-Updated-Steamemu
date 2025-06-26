@@ -111,7 +111,7 @@ g++ -shared -fPIC -fvisibility=hidden -Wl,--exclude-libs,ALL \
 	-I../protobuf/prefix/include/ \
 	-L./frida-gum-x86_64/ \
 	-L../protobuf/prefix/lib/ \
-	-lGL -lX11 -lXext -lprotobuf -lprotobuf-lite -lpthread -lfrida-gumjs -ldl -std=c++14 && echo built64
+	-lGL -lX11 -lXext -lprotobuf -lprotobuf-lite -lpthread -lfrida-gum -ldl -std=c++14 && echo built64
 
 g++ -shared -fPIC -fvisibility=hidden -Wl,--exclude-libs,ALL \
 	-DGNUC -DEMU_EXPERIMENTAL_BUILD -DSTEAMCLIENT_DLL -DCONTROLLER_SUPPORT -s \

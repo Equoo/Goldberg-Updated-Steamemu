@@ -61,6 +61,7 @@ Base_Hook::Base_Hook():
     _library(nullptr)
 {
     gum_init_embedded();
+    _interceptor = gum_interceptor_obtain();
 }
 
 Base_Hook::~Base_Hook()
@@ -84,7 +85,7 @@ void Base_Hook::EndHook()
 
 void Base_Hook::HookFunc(std::pair<void**, void*> hook)
 {
-    gum_interceptor_attach(gum_interceptor_obtain(), *hook.first, hook.second, nullptr);
+    gum_interceptor_replace_fast(_interceptor, *hook.first, hook.second, hook.first);
     _hooked_funcs.emplace_back(hook);
 }
 
@@ -93,7 +94,7 @@ void Base_Hook::UnhookAll()
     if (_hooked_funcs.size())
     {
         std::for_each(_hooked_funcs.begin(), _hooked_funcs.end(), [](std::pair<void**, void*>& hook) {
-            gum_interceptor_detach(*hook.first, hook.second);
+            gum_interceptor_revert(_interceptor, *hook.first);
             });
         _hooked_funcs.clear();
     }

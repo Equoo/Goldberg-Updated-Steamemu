@@ -3,6 +3,10 @@
 
 #include "../dll/base.h"
 
+#ifdef __LINUX__
+#include "frida-gum.h"
+#endif
+
 #ifdef EMU_OVERLAY
 
 class Base_Hook
@@ -11,6 +15,9 @@ protected:
     std::vector<std::pair<void**, void*>> _hooked_funcs;
 
     void* _library;
+#ifdef __LINUX__
+    GumInterceptor* _interceptor;
+#endif
 
     Base_Hook(const Base_Hook&) = delete;
     Base_Hook(Base_Hook&&) = delete;

@@ -87,6 +87,7 @@ void Base_Hook::EndHook()
 
 void Base_Hook::HookFunc(std::pair<void**, void*> hook)
 {
+    PRINT_DEBUG(fmt, ... "Hooking function: %p -> %p\n", (void*)*hook.first, hook.second);
     gum_interceptor_replace_fast(_interceptor, *hook.first, hook.second, hook.first);
     _hooked_funcs.emplace_back(hook);
 }

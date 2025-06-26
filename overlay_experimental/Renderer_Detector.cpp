@@ -1112,14 +1112,18 @@ private:
 
     static void MyglXSwapBuffers(Display* dpy, GLXDrawable drawable)
     {
+        SPDLOG_DEBUG("MyglXSwapBuffers called");
         auto inst = Inst();
         std::lock_guard<std::mutex> lk(inst->renderer_mutex);
         inst->glXSwapBuffers(dpy, drawable);
+        SPDLOG_DEBUG("MyglXSwapBuffers Drawed");
         if (inst->detection_done)
             return;
 
+        SPDLOG_DEBUG("gloadLoaderLoadGL() >= GLAD_MAKE_VERSION(3, 1) ? %d", gladLoaderLoadGL());
         if (gladLoaderLoadGL() >= GLAD_MAKE_VERSION(3, 1))
         {
+            SPDLOG_DEBUG("OpenGLX detected, unhooking");
             inst->detection_hooks.UnhookAll();
             inst->renderer_hook = static_cast<ingame_overlay::Renderer_Hook*>(Inst()->openglx_hook);
             inst->openglx_hook = nullptr;
@@ -1388,7 +1392,6 @@ public:
                         {
                             std::lock_guard<std::mutex> lk(renderer_mutex);
                             (this->*library.second)(System::Library::GetLibraryPath(lib_handle));
-                            detection_done = true;
                             SPDLOG_TRACE("Renderer library loaded: %s", lib_path.c_str());
                         }
                     }

@@ -75,6 +75,7 @@ jobs:
             gcc-multilib g++-multilib libc6-dev-i386 \
             libgl1-mesa-dev:i386 libx11-dev:i386 libxext-dev:i386
 
+          mkdir -p ./frida-gum-x86_64
           curl -sSL https://github.com/frida/frida/releases/download/17.2.5/frida-gumjs-devkit-17.2.5-linux-x86_64.tar.xz | tar -xJf - -C ./frida-gum-x86_64
 
           echo 'System Info:'

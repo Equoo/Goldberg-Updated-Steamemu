@@ -77,10 +77,12 @@ const char* Base_Hook::get_lib_name() const
 
 void Base_Hook::BeginHook()
 {
+    gum_interceptor_begin_transaction (_interceptor);
 }
 
 void Base_Hook::EndHook()
 {
+    gum_interceptor_end_transaction (_interceptor);
 }
 
 void Base_Hook::HookFunc(std::pair<void**, void*> hook)
@@ -93,10 +95,12 @@ void Base_Hook::UnhookAll()
 {
     if (_hooked_funcs.size())
     {
+        BeginHook();
         std::for_each(_hooked_funcs.begin(), _hooked_funcs.end(), [this](std::pair<void**, void*>& hook) {
             gum_interceptor_revert(_interceptor, *hook.first);
             });
         _hooked_funcs.clear();
+        EndHook();
     }
 }
 
